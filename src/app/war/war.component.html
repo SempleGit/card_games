@@ -1,0 +1,5 @@
+<p>War Working</p>
+<p *ngIf="deck">{{deck.deck_id}}</p>
+<button (click)="drawCard()">Get</button>
+<img *ngIf="card" src={{card.image}} alt="Image of {{card.value}} of {{card.suit}}">
+<p *ngIf="draw">{{draw.remaining}}</p>
