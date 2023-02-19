@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { forkJoin, lastValueFrom } from 'rxjs';
 import { Card } from '../card';
 import { CardService } from '../card-service';
 import { Deck } from '../deck';
 import { Draw } from '../draw';
+import { Player } from '../player';
 
 @Component({
   selector: 'app-war',
@@ -17,8 +19,37 @@ export class WarComponent {
     "shuffled": true
   };
 
+  cardValues: string[] = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "JACK",
+    "QUEEN",
+    "KING",
+    "ACE"
+  ]
+
   card?: Card;
   draw?: Draw;
+
+  player1: Player = {
+    name: 'Player 1',
+    pile: 'p1_pile',
+  }
+
+  player2: Player = {
+    name: 'Player 2',
+    pile: 'p2_pile',
+  }
+
+  winner?: Player;
 
   constructor(private cardService: CardService) {
 
@@ -28,11 +59,48 @@ export class WarComponent {
     this.getDeck();
   }
 
-  drawCard() {
+  drawCard(): void {
     this.cardService.drawCard(this.deck.deck_id).subscribe(draw => {
       this.draw = draw;
       this.card = draw.cards[0];
     })
+  }
+
+  async playCards(): Promise<void> {
+    await lastValueFrom(this.cardService.playCard(this.deck.deck_id, this.player1.pile)).then(draw => {
+      this.player1.currentCard = draw.cards[0]
+    });
+    await lastValueFrom(this.cardService.playCard(this.deck.deck_id, this.player2.pile)).then(draw => {
+      this.player2.currentCard = draw.cards[0]
+    });
+    this.handleRound();
+  }
+
+  handleRound(): void {
+    console.log(this.player1.currentCard, this.player2.currentCard)
+    if (this.player1.currentCard &&
+      this.player2.currentCard &&
+      this.cardValues.indexOf(this.player1.currentCard.value) > this.cardValues.indexOf(this.player2.currentCard.value)) {
+      this.winner = this.player1;
+    } else {
+      this.winner = this.player2;
+    }
+  }
+
+  dealCards(): void {
+    let p1: string[] = [];
+    let p2: string[] = [];
+    // `https://www.deckofcardsapi.com/api/deck/${this.deck.deck_id}/shuffle/`
+    this.cardService.drawCard(this.deck.deck_id, 52).subscribe(draw => {
+      this.draw = draw;
+      for (let i = 0; i < draw.cards.length; i++) {
+        i % 2 === 0 ? p1.push(draw.cards[i].code) : p2.push(draw.cards[i].code);
+      }
+      forkJoin([
+        this.cardService.addToHand(this.deck.deck_id, this.player1.pile, p1.join()),
+        this.cardService.addToHand(this.deck.deck_id, this.player2.pile, p2.join())
+      ]).subscribe();
+    });
   }
 
   getDeck(): void {
