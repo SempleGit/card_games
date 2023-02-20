@@ -96,17 +96,13 @@ export class WarComponent {
         this.winner = this.player2;
         this.war = false;
       }
+      // Add the winning cards to the winning player's hand, clears the playedCards array.
+      this.winner && this.cardService.addToHand(this.deck.deck_id, this.winner.pile, this.playedCards.splice(0).map(card => card.code).join()).subscribe(res => {
+        console.log(res);
+        this.player1.remaining = res.piles && res.piles.p1_pile.remaining;
+        this.player2.remaining = res.piles && res.piles.p2_pile.remaining;
+      })
     }
-    // Add the winning cards to the winning player's hand, clears the playedCards array.
-    this.winner && this.cardService.addToHand(this.deck.deck_id, this.winner.pile, this.playedCards.splice(0).map(card => card.code).join()).subscribe(res => {
-      console.table(res.piles);
-      this.player1.remaining = res.piles && res.piles.p1_pile.remaining;
-      this.player2.remaining = res.piles && res.piles.p2_pile.remaining;
-    })
-  }
-
-  pileWinningCards(): void {
-
   }
 
   dealCards(): void {
@@ -132,7 +128,9 @@ export class WarComponent {
   }
 
   shuffleDeck(): void {
-    this.cardService.reshuffleDeck(this.deck.deck_id).subscribe(res => console.log(res));
+    this.cardService.reshuffleDeck(this.deck.deck_id).subscribe(res => {
+      this.draw ? this.draw.remaining = res.remaining : '';
+    });
   }
 
 }
