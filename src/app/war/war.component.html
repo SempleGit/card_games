@@ -1,15 +1,22 @@
 <p>War Working</p>
 <p *ngIf="deck">Deck: {{deck.deck_id}}</p>
+<input [(ngModel)]="player1.name">
+<input [(ngModel)]="player2.name">
 <button (click)="dealCards()">Deal</button>
+<button (click)="shuffleDeck()">Shuffle</button>
 <p *ngIf="draw">Cards Dealt from deck {{deck.deck_id}}</p>
 <button *ngIf="draw && draw.remaining === 0" (click)="playCards()">Play!</button>
 <div class="game">
-  <p>{{player1.name}}</p>
-  <img *ngIf="player1.currentCard" src={{player1.currentCard.image}}
-    alt="Image of {{player1.currentCard.value}} of {{player1.currentCard.suit}}">
-  <p>{{player2.name}}</p>
-  <img *ngIf="player2.currentCard" src={{player2.currentCard.image}}
-    alt="Image of {{player2.currentCard.value}} of {{player2.currentCard.suit}}">
+  <div class="player">
+    <h2>{{player1.name}}</h2>
+    <img *ngIf="player1.currentCard" src={{player1.currentCard.image}}
+      alt="Image of {{player1.currentCard.value}} of {{player1.currentCard.suit}}">
+  </div>
+  <div class="player">
+    <h2>{{player2.name}}</h2>
+    <img *ngIf="player2.currentCard" src={{player2.currentCard.image}}
+      alt="Image of {{player2.currentCard.value}} of {{player2.currentCard.suit}}">
+  </div>
 </div>
 <div class="result">
   <h2 *ngIf="winner">{{winner.name}} Wins!</h2>

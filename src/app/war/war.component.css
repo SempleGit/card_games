@@ -1,4 +1,6 @@
 .game {
   display: flex;
   flex-direction: row;
+  justify-content: space-around;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

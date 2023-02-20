@@ -30,4 +30,9 @@ export class CardService {
   playCard(deckId: string, playerHand: string, count: number = 1): Observable<Draw> {
     return this.http.get<Draw>(`https://www.deckofcardsapi.com/api/deck/${deckId}/pile/${playerHand}/draw/bottom/?count=${count}`)
   }
+
+  reshuffleDeck(deckId: string) {
+    return this.http.get<Deck>(`https://www.deckofcardsapi.com/api/deck/${deckId}/shuffle/`);
+  }
+
 }
