@@ -96,10 +96,13 @@ export class WarComponent {
         this.winner = this.player2;
         this.war = false;
       }
-      console.log(this.playedCards);
     }
     // Add the winning cards to the winning player's hand, clears the playedCards array.
-    this.winner && this.cardService.addToHand(this.deck.deck_id, this.winner.pile, this.playedCards.splice(0).map(card => card.code).join()).subscribe(res => console.table(res.piles));
+    this.winner && this.cardService.addToHand(this.deck.deck_id, this.winner.pile, this.playedCards.splice(0).map(card => card.code).join()).subscribe(res => {
+      console.table(res.piles);
+      this.player1.remaining = res.piles && res.piles.p1_pile.remaining;
+      this.player2.remaining = res.piles && res.piles.p2_pile.remaining;
+    })
   }
 
   pileWinningCards(): void {
@@ -115,7 +118,11 @@ export class WarComponent {
         i % 2 === 0 ? p1.push(draw.cards[i].code) : p2.push(draw.cards[i].code);
       }
       this.cardService.addToHand(this.deck.deck_id, this.player1.pile, p1.join()).subscribe(res => {
-        this.cardService.addToHand(this.deck.deck_id, this.player2.pile, p2.join()).subscribe(res => console.log(res))
+        this.cardService.addToHand(this.deck.deck_id, this.player2.pile, p2.join()).subscribe(res => {
+          this.player1.remaining = res.piles.p1_pile.remaining;
+          this.player2.remaining = res.piles.p2_pile.remaining;
+          console.log(res)
+        })
       })
     });
   }

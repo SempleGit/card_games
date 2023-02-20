@@ -15,11 +15,14 @@
 <div class="game">
   <div class="player">
     <h2>{{player1.name}}</h2>
+    <p>Cards: {{player1.remaining}}</p>
     <img *ngIf="player1.currentCard" src={{player1.currentCard.image}}
       alt="Image of {{player1.currentCard.value}} of {{player1.currentCard.suit}}">
   </div>
+  <h2 *ngIf="war">WAR!</h2>
   <div class="player">
     <h2>{{player2.name}}</h2>
+    <p>Cards: {{player2.remaining}}</p>
     <img *ngIf="player2.currentCard" src={{player2.currentCard.image}}
       alt="Image of {{player2.currentCard.value}} of {{player2.currentCard.suit}}">
   </div>
