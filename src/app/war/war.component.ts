@@ -41,15 +41,16 @@ export class WarComponent {
   draw?: Draw;
 
   player1: Player = {
-    name: 'Elena',
+    name: 'Player 1',
     pile: 'p1_pile',
   }
 
   player2: Player = {
-    name: 'Daddy',
+    name: 'Player 2',
     pile: 'p2_pile',
   }
 
+  war: Boolean = false;
   winner?: Player;
 
   playedCards: Card[] = [];
@@ -70,28 +71,39 @@ export class WarComponent {
   }
 
   async playCards(): Promise<void> {
-    await lastValueFrom(this.cardService.playCard(this.deck.deck_id, this.player1.pile)).then(draw => {
-      this.player1.currentCard = draw.cards[0]
-      this.playedCards.push(draw.cards[0])
+    let count = this.war ? 2 : 1;
+    await lastValueFrom(this.cardService.playCard(this.deck.deck_id, this.player1.pile, count)).then(draw => {
+      this.player1.currentCard = draw.cards[count - 1]
+      this.playedCards = this.playedCards.concat(draw.cards);
     });
-    await lastValueFrom(this.cardService.playCard(this.deck.deck_id, this.player2.pile)).then(draw => {
-      this.player2.currentCard = draw.cards[0]
-      this.playedCards.push(draw.cards[0])
+    await lastValueFrom(this.cardService.playCard(this.deck.deck_id, this.player2.pile, count)).then(draw => {
+      this.player2.currentCard = draw.cards[count - 1]
+      this.playedCards = this.playedCards.concat(draw.cards);
     });
     this.handleRound();
   }
 
   handleRound(): void {
-
-    if (this.player1.currentCard &&
-      this.player2.currentCard &&
-      this.cardValues.indexOf(this.player1.currentCard.value) > this.cardValues.indexOf(this.player2.currentCard.value)) {
-      this.winner = this.player1;
-    } else {
-      this.winner = this.player2;
+    if (this.player1.currentCard && this.player2.currentCard) {
+      if (this.cardValues.indexOf(this.player1.currentCard.value) === this.cardValues.indexOf(this.player2.currentCard.value)) {
+        this.war = true;
+        return
+      }
+      else if (this.cardValues.indexOf(this.player1.currentCard.value) > this.cardValues.indexOf(this.player2.currentCard.value)) {
+        this.winner = this.player1;
+        this.war = false;
+      } else {
+        this.winner = this.player2;
+        this.war = false;
+      }
+      console.log(this.playedCards);
     }
     // Add the winning cards to the winning player's hand, clears the playedCards array.
-    this.cardService.addToHand(this.deck.deck_id, this.winner.pile, this.playedCards.splice(0).map(card => card.code).join()).subscribe(res => console.table(res.piles));
+    this.winner && this.cardService.addToHand(this.deck.deck_id, this.winner.pile, this.playedCards.splice(0).map(card => card.code).join()).subscribe(res => console.table(res.piles));
+  }
+
+  pileWinningCards(): void {
+
   }
 
   dealCards(): void {

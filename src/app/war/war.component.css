@@ -4,3 +4,9 @@
   justify-content: space-around;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.player_input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}

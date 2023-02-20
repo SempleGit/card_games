@@ -27,7 +27,7 @@ export class CardService {
     return this.http.get<Pile>(`https://www.deckofcardsapi.com/api/deck/${deckId}/pile/${playerHand}/add/?cards=${card_code}`);
   }
 
-  playCard(deckId: string, playerHand: string, count: number = 1): Observable<Draw> {
+  playCard(deckId: string, playerHand: string, count: number): Observable<Draw> {
     return this.http.get<Draw>(`https://www.deckofcardsapi.com/api/deck/${deckId}/pile/${playerHand}/draw/bottom/?count=${count}`)
   }
 
